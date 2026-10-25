@@ -208,7 +208,7 @@ export default function InstagramSettingsPage() {
                     Sign in directly with your Instagram account — no Facebook Page needed.
                   </p>
                 </div>
-                <Badge className="bg-purple-100 text-purple-800 border-purple-200 shrink-0 ml-2">Recommended</Badge>
+                <Badge className="bg-purple-600 text-white border-purple-500 shrink-0 ml-2">Recommended</Badge>
               </div>
               <ul className="space-y-1.5">
                 {["No Facebook Page required", "Sign in with Instagram credentials", "Works with any Professional account"].map(t => (
