@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Search, Send, MessageCircle } from "lucide-react"
+import { useInstagramStatus } from "@/lib/use-instagram-status"
+import { ConnectInstagramPrompt } from "@/components/connect-prompt"
 
 interface Conversation {
   id: string
@@ -80,6 +82,7 @@ function AvatarCircle({
 
 export default function InstagramInboxPage() {
   const { orgSlug } = useParams<{ orgSlug: string }>()
+  const igConnected = useInstagramStatus(orgSlug)
 
   // Left panel state
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -260,6 +263,10 @@ export default function InstagramInboxPage() {
     { key: "unread", label: "Unread" },
     { key: "archived", label: "Archived" },
   ]
+
+  if (igConnected === false) {
+    return <div className="p-6"><ConnectInstagramPrompt feature="DM Inbox" /></div>
+  }
 
   return (
     <div className="grid grid-cols-[320px_1fr] h-[calc(100vh-64px)]">

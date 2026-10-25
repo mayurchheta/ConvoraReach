@@ -14,15 +14,17 @@ import {
   Settings,
   LogOut,
   UserCircle,
+  LayoutDashboard,
 } from "lucide-react"
 
 const NAV_ITEMS = [
-  { href: "/instagram", label: "Settings", icon: Settings },
+  { href: "/instagram/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/instagram/inbox", label: "DM Inbox", icon: MessageCircle },
   { href: "/instagram/automations", label: "Automations", icon: Zap },
   { href: "/instagram/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/instagram/contacts", label: "Contacts", icon: Users },
   { href: "/instagram/publish", label: "Publish", icon: Upload },
+  { href: "/instagram", label: "Settings", icon: Settings },
 ]
 
 export default function OrgLayout({ children }: { children: React.ReactNode }) {

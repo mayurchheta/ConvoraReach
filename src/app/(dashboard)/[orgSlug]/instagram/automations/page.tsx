@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useInstagramStatus } from "@/lib/use-instagram-status"
+import { ConnectInstagramPrompt } from "@/components/connect-prompt"
 import {
   Plus,
   Pencil,
@@ -189,6 +191,7 @@ function KeywordInput({
 
 export default function InstagramAutomationsPage() {
   const { orgSlug } = useParams<{ orgSlug: string }>()
+  const igConnected = useInstagramStatus(orgSlug)
   const [automations, setAutomations] = useState<Automation[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -371,6 +374,10 @@ export default function InstagramAutomationsPage() {
     } finally {
       setDeletingId(null)
     }
+  }
+
+  if (igConnected === false) {
+    return <div className="p-6"><ConnectInstagramPrompt feature="Automations" /></div>
   }
 
   if (loading) {

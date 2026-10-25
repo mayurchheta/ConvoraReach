@@ -5,6 +5,8 @@ import { useParams } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useInstagramStatus } from "@/lib/use-instagram-status"
+import { ConnectInstagramPrompt } from "@/components/connect-prompt"
 import {
   MessageCircle,
   Mail,
@@ -94,6 +96,7 @@ function TrendIcon({ value }: { value: number }) {
 
 export default function InstagramAnalyticsPage() {
   const { orgSlug } = useParams<{ orgSlug: string }>()
+  const igConnected = useInstagramStatus(orgSlug)
   const [period, setPeriod] = useState<Period>("30d")
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -155,6 +158,10 @@ export default function InstagramAnalyticsPage() {
   const totalTriggerTypes = data
     ? data.by_trigger_type.reduce((s, t) => s + t.count, 0)
     : 0
+
+  if (igConnected === false) {
+    return <div className="p-6"><ConnectInstagramPrompt feature="Analytics" /></div>
+  }
 
   if (loading) {
     return (

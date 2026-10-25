@@ -221,28 +221,28 @@ export default function InstagramSettingsPage() {
               </a>
             </div>
 
-            {/* Option 2: Facebook Login */}
-            <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+            {/* Option 2: Facebook Login — Coming Soon */}
+            <div className="rounded-xl border border-border bg-card p-5 space-y-3 opacity-60">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold">Connect via Facebook</h3>
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    Use your existing Meta integration if your Instagram is linked to a Facebook Page.
+                    Connect through your Facebook Page for additional features.
                   </p>
                 </div>
-                <Badge variant="secondary" className="shrink-0 ml-2">Alternative</Badge>
+                <Badge variant="secondary" className="shrink-0 ml-2">Coming Soon</Badge>
               </div>
               <ul className="space-y-1.5">
-                {["Uses existing Facebook Page connection", "Shares token with Lead Ads integration", "Requires FB Page linked to IG account"].map(t => (
+                {["Facebook Page integration", "Extended API capabilities", "Page-level analytics"].map(t => (
                   <li key={t} className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" />
                     {t}
                   </li>
                 ))}
               </ul>
-              <Link href={`/${orgSlug}/instagram`}>
-                <Button variant="outline">Go to Settings →</Button>
-              </Link>
+              <Button variant="outline" disabled className="cursor-not-allowed">
+                Coming Soon
+              </Button>
             </div>
           </div>
         ) : (

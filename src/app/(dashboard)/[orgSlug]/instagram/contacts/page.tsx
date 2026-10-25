@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Search, Download, Users, Check, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { useInstagramStatus } from "@/lib/use-instagram-status"
+import { ConnectInstagramPrompt } from "@/components/connect-prompt"
 
 interface InstagramContact {
   id: string
@@ -71,6 +73,7 @@ function exportCsv(contacts: InstagramContact[]): void {
 
 export default function InstagramContactsPage() {
   const { orgSlug } = useParams<{ orgSlug: string }>()
+  const igConnected = useInstagramStatus(orgSlug)
   const [contacts, setContacts] = useState<InstagramContact[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -162,6 +165,10 @@ export default function InstagramContactsPage() {
     exportCsv(contacts)
     toast.success(`Exported ${contacts.length} contacts`)
   }, [contacts])
+
+  if (igConnected === false) {
+    return <div className="p-6"><ConnectInstagramPrompt feature="Contacts" /></div>
+  }
 
   return (
     <div className="p-6 space-y-5 max-w-5xl">

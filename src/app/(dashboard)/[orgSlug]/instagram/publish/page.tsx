@@ -8,6 +8,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useInstagramStatus } from "@/lib/use-instagram-status"
+import { ConnectInstagramPrompt } from "@/components/connect-prompt"
 import {
   PenSquare,
   ArrowLeft,
@@ -26,6 +28,7 @@ type InputMode = "upload" | "url"
 
 export default function InstagramPublishPage() {
   const { orgSlug } = useParams<{ orgSlug: string }>()
+  const igConnected = useInstagramStatus(orgSlug)
 
   const [inputMode, setInputMode] = useState<InputMode>("upload")
   const [imageUrl, setImageUrl] = useState("")
@@ -123,6 +126,10 @@ export default function InstagramPublishPage() {
   const captionCharsLeft = MAX_CAPTION - caption.length
   const captionOverLimit = captionCharsLeft < 0
   const hasImage = !!imageUrl.trim()
+
+  if (igConnected === false) {
+    return <div className="p-6"><ConnectInstagramPrompt feature="Publishing" /></div>
+  }
 
   return (
     <div className="p-6 max-w-xl space-y-6">
