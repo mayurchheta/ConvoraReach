@@ -55,8 +55,8 @@ export default function InstagramSettingsPage() {
 
   const instagramAppId = "1265737819063214"
   const redirectUri = typeof window !== "undefined"
-    ? `${window.location.origin}/api/instagram/callback`
-    : "https://reach.convora.io/api/instagram/callback"
+    ? `${window.location.origin}/api/auth/instagram/callback`
+    : "https://reach.convora.io/api/auth/instagram/callback"
   const igOAuthUrl = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${instagramAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights&state=${orgSlug}`
 
   // Rewind state
