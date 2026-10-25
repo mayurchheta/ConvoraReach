@@ -23,19 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `
-          (function() {
-            var t = localStorage.getItem('theme');
-            if (t === 'light') {
-              document.documentElement.classList.remove('dark');
-              document.documentElement.classList.add('light');
-            }
-          })();
-        `}} />
-      </head>
-      <body className="min-h-full flex flex-col bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
+      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100">
         {children}
       </body>
     </html>
