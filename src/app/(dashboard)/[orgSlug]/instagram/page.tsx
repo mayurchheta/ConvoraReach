@@ -53,6 +53,12 @@ export default function InstagramSettingsPage() {
   const [disconnecting, setDisconnecting] = useState(false)
   const [syncing, setSyncing] = useState(false)
 
+  const instagramAppId = "1265737819063214"
+  const redirectUri = typeof window !== "undefined"
+    ? `${window.location.origin}/api/auth/instagram/callback`
+    : "https://reach.convora.io/api/auth/instagram/callback"
+  const igOAuthUrl = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${instagramAppId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights&state=${orgSlug}`
+
   // Rewind state
   const [rewindMedia, setRewindMedia] = useState<RewindMedia[]>([])
   const [rewindLoading, setRewindLoading] = useState(false)
@@ -213,7 +219,7 @@ export default function InstagramSettingsPage() {
                 ))}
               </ul>
               <a
-                href={`https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${process.env.NEXT_PUBLIC_INSTAGRAM_APP_ID ?? "1265737819063214"}&redirect_uri=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/api/auth/instagram/callback` : "")}&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights&state=${orgSlug}`}
+                href={igOAuthUrl}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 <Camera className="h-4 w-4" />
@@ -269,7 +275,7 @@ export default function InstagramSettingsPage() {
                   {syncing ? "Syncing..." : "Sync DMs"}
                 </button>
                 <a
-                  href={`https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${process.env.NEXT_PUBLIC_INSTAGRAM_APP_ID ?? "1265737819063214"}&redirect_uri=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/api/auth/instagram/callback` : "")}&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights&state=${orgSlug}`}
+                  href={igOAuthUrl}
                   className="text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-2.5 py-1.5 transition-colors"
                 >
                   Reconnect
