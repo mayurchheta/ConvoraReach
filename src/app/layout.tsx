@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Convora Reach — Instagram DM Automation",
   description: "Automate Instagram comments, DMs, and email capture with Convora Reach.",
+  icons: {
+    icon: "/convora-icon.png",
+    apple: "/apple-touch-icon.png",
+  },
 }
 
 export default function RootLayout({
