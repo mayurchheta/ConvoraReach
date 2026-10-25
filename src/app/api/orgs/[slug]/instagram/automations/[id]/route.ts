@@ -100,6 +100,8 @@ export async function DELETE(
     return NextResponse.json({ error: "Automation not found" }, { status: 404 })
   }
 
+  // Delete logs first (foreign key), then the automation
+  await prisma.instagram_automation_logs.deleteMany({ where: { automation_id: id } })
   await prisma.instagram_automations.delete({ where: { id } })
 
   return NextResponse.json({ ok: true })

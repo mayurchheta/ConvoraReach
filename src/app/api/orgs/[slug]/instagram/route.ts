@@ -59,13 +59,20 @@ export async function DELETE(
   const orgId = access.org.id
 
   // Delete all Instagram data for this org (order matters — foreign keys)
+  // 1. Get conversation IDs for this org
+  const convIds = (await prisma.instagram_conversations.findMany({
+    where: { org_id: orgId },
+    select: { id: true },
+  })).map(c => c.id)
+
+  // 2. Delete in FK order
+  if (convIds.length > 0) {
+    await prisma.instagram_messages.deleteMany({ where: { conversation_id: { in: convIds } } })
+  }
   await prisma.instagram_automation_logs.deleteMany({ where: { org_id: orgId } })
-  await prisma.instagram_messages.deleteMany({
-    where: { conversation: { org_id: orgId } },
-  })
+  await prisma.instagram_automations.deleteMany({ where: { org_id: orgId } })
   await prisma.instagram_conversations.deleteMany({ where: { org_id: orgId } })
   await prisma.instagram_contacts.deleteMany({ where: { org_id: orgId } })
-  await prisma.instagram_automations.deleteMany({ where: { org_id: orgId } })
   await prisma.instagram_optouts.deleteMany({ where: { org_id: orgId } })
 
   // Delete the integration record entirely (not just deactivate)
