@@ -47,7 +47,7 @@ export async function POST(
   return NextResponse.json({ ok: true })
 }
 
-// DELETE: Disconnect Instagram
+// DELETE: Disconnect Instagram — clean all data
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -56,10 +56,21 @@ export async function DELETE(
   const access = await verifyOrgAdmin(slug)
   if ("error" in access) return access.error
 
-  // Deactivate the instagram integration
-  await prisma.org_integrations.updateMany({
-    where: { org_id: access.org.id, platform: "instagram" },
-    data: { is_active: false },
+  const orgId = access.org.id
+
+  // Delete all Instagram data for this org (order matters — foreign keys)
+  await prisma.instagram_automation_logs.deleteMany({ where: { org_id: orgId } })
+  await prisma.instagram_messages.deleteMany({
+    where: { conversation: { org_id: orgId } },
+  })
+  await prisma.instagram_conversations.deleteMany({ where: { org_id: orgId } })
+  await prisma.instagram_contacts.deleteMany({ where: { org_id: orgId } })
+  await prisma.instagram_automations.deleteMany({ where: { org_id: orgId } })
+  await prisma.instagram_optouts.deleteMany({ where: { org_id: orgId } })
+
+  // Delete the integration record entirely (not just deactivate)
+  await prisma.org_integrations.deleteMany({
+    where: { org_id: orgId, platform: "instagram" },
   })
 
   return NextResponse.json({ ok: true })
