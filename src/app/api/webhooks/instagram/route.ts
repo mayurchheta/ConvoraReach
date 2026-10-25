@@ -240,7 +240,11 @@ async function processMessage(
   const senderId = event.sender.id
   const messageText = event.message.text ?? ""
   const messageId = event.message.mid
-  const timestamp = event.timestamp ? new Date(event.timestamp * 1000) : new Date()
+  // Meta sends timestamp in seconds (10 digits) or milliseconds (13 digits)
+  const rawTs = event.timestamp ?? 0
+  const timestamp = rawTs > 0
+    ? new Date(rawTs > 9999999999 ? rawTs : rawTs * 1000)
+    : new Date()
 
   // Skip echo messages (from ourselves)
   if (senderId === igAccountId) return
