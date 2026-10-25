@@ -4,7 +4,12 @@ import pg from "pg"
 
 const connectionString = process.env.DATABASE_URL!
 
-const pool = new pg.Pool({ connectionString })
+const pool = new pg.Pool({
+  connectionString,
+  max: 5,
+  idleTimeoutMillis: 60_000,
+  connectionTimeoutMillis: 5_000,
+})
 const adapter = new PrismaPg(pool)
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }

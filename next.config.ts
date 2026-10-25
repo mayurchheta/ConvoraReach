@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: false,
   turbopack: {
     rules: {
@@ -11,6 +10,8 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  // Pin serverless functions to Mumbai (closest to DB at 72.60.101.180)
+  serverExternalPackages: ["pg"],
 };
 
 export default nextConfig;
