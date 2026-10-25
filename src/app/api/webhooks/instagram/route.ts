@@ -96,18 +96,31 @@ export async function POST(req: NextRequest) {
 // ─── Signature Verification ────────────────────────────────────────────────────
 
 function verifySignature(body: string, signature: string | null): boolean {
-  const secret = process.env.META_APP_SECRET?.trim()
-  if (!secret) {
-    console.error("[webhook] META_APP_SECRET not configured")
-    return false
-  }
   if (!signature) {
     console.error("[webhook] No X-Hub-Signature-256 header")
     return false
   }
 
-  const expected = "sha256=" + createHmac("sha256", secret).update(body).digest("hex")
-  return signature === expected
+  // Try META_APP_SECRET first (Facebook App Secret), then INSTAGRAM_APP_SECRET
+  const secrets = [
+    process.env.META_APP_SECRET?.trim(),
+    process.env.INSTAGRAM_APP_SECRET?.trim(),
+  ].filter(Boolean) as string[]
+
+  if (secrets.length === 0) {
+    console.error("[webhook] No app secrets configured")
+    return false
+  }
+
+  for (const secret of secrets) {
+    const expected = "sha256=" + createHmac("sha256", secret).update(body).digest("hex")
+    if (signature === expected) {
+      return true
+    }
+  }
+
+  console.error("[webhook] HMAC mismatch — signature:", signature?.slice(0, 20) + "...", "tried", secrets.length, "secrets")
+  return false
 }
 
 // ─── Find Org by IG Account ID ─────────────────────────────────────────────────
