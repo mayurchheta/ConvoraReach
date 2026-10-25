@@ -2,22 +2,13 @@ import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { auth } from "@/lib/auth-full"
-import { prisma } from "@/lib/prisma"
 import { FeaturesGrid } from "./(landing)/features"
 
 export default async function HomePage() {
   const session = await auth()
 
   if (session?.user?.id) {
-    const membership = await prisma.org_memberships.findFirst({
-      where: { user_id: session.user.id, is_active: true },
-      include: { org: { select: { slug: true } } },
-      orderBy: { created_at: "asc" },
-    })
-
-    if (membership) {
-      redirect("/instagram/dashboard")
-    }
+    redirect("/instagram/dashboard")
   }
 
   // Unauthenticated (or no org) — render landing page

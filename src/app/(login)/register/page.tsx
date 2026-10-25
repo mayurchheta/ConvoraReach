@@ -4,9 +4,11 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { toast, Toaster } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AuthLogo } from "@/components/auth-logo"
+import { Loader2 } from "lucide-react"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -44,10 +46,12 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         setError(data.error ?? "Registration failed")
+        setLoading(false)
         return
       }
 
-      // Auto-sign in after registration
+      toast.success("Account created! Signing in...")
+
       const result = await signIn("credentials", {
         email: email.trim().toLowerCase(),
         password,
@@ -55,21 +59,20 @@ export default function RegisterPage() {
       })
 
       if (result?.error) {
-        // Registration worked but login failed — send to login page
         router.push("/login?registered=true")
       } else {
-        router.push("/")
+        router.push("/instagram/dashboard")
         router.refresh()
       }
     } catch {
       setError("Something went wrong")
-    } finally {
       setLoading(false)
     }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
+      <Toaster position="top-center" theme="dark" richColors />
       <div className="w-full max-w-sm space-y-8">
         <AuthLogo />
 
@@ -90,77 +93,35 @@ export default function RegisterPage() {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-300">Full name</label>
-              <Input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="John Doe"
-                required
-                autoComplete="name"
-                className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
-              />
+              <Input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="John Doe" required autoComplete="name" disabled={loading} className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500" />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-300">Email</label>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                autoComplete="email"
-                className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
-              />
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required autoComplete="email" disabled={loading} className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500" />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-300">Password</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min 8 characters"
-                required
-                minLength={8}
-                autoComplete="new-password"
-                className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
-              />
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 characters" required minLength={8} autoComplete="new-password" disabled={loading} className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500" />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-300">
-                Workspace name{" "}
-                <span className="text-zinc-600 font-normal">(optional)</span>
+                Workspace name <span className="text-zinc-600 font-normal">(optional)</span>
               </label>
-              <Input
-                type="text"
-                value={orgName}
-                onChange={(e) => setOrgName(e.target.value)}
-                placeholder="My Business"
-                autoComplete="organization"
-                className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
-              />
-              <p className="text-xs text-zinc-600">
-                Creates a workspace for your team. Leave blank to use your name.
-              </p>
+              <Input type="text" value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="My Business" autoComplete="organization" disabled={loading} className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500" />
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              disabled={loading}
-            >
-              {loading ? "Creating account..." : "Create Account"}
+            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={loading}>
+              {loading ? (<><Loader2 className="h-4 w-4 animate-spin" />Creating account...</>) : "Create Account"}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-sm text-zinc-500">
           Already have an account?{" "}
-          <Link href="/login" className="text-purple-400 hover:text-purple-300 transition-colors">
-            Sign in
-          </Link>
+          <Link href="/login" className="text-purple-400 hover:text-purple-300 transition-colors">Sign in</Link>
         </p>
       </div>
     </div>

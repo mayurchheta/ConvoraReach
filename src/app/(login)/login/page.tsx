@@ -4,9 +4,11 @@ import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { toast, Toaster } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AuthLogo } from "@/components/auth-logo"
+import { Loader2 } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -29,19 +31,21 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError("Invalid email or password")
+        setLoading(false)
       } else {
-        router.push("/")
+        toast.success("Signed in! Redirecting...")
+        router.push("/instagram/dashboard")
         router.refresh()
       }
     } catch {
       setError("Something went wrong")
-    } finally {
       setLoading(false)
     }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
+      <Toaster position="top-center" theme="dark" richColors />
       <div className="w-full max-w-sm space-y-8">
         <AuthLogo />
 
@@ -69,6 +73,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
+                disabled={loading}
                 className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
               />
             </div>
@@ -90,6 +95,7 @@ export default function LoginPage() {
                 placeholder="Your password"
                 required
                 autoComplete="current-password"
+                disabled={loading}
                 className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
               />
             </div>
@@ -99,7 +105,14 @@ export default function LoginPage() {
               className="w-full bg-purple-600 hover:bg-purple-700"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
             </Button>
           </form>
         </div>
