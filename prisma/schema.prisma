@@ -1,0 +1,192 @@
+generator client {
+  provider        = "prisma-client-js"
+  // driverAdapters is now GA in Prisma 7+
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth & Org Models ────────────────────────────────────────────────────────
+
+model organizations {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  slug        String   @unique
+  logo_url    String?
+  webhook_key String?
+  settings    Json     @default("{}")
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  memberships              org_memberships[]
+  integrations             org_integrations[]
+  instagram_automations    instagram_automations[]
+  instagram_conversations  instagram_conversations[]
+  instagram_contacts       instagram_contacts[]
+  instagram_automation_logs instagram_automation_logs[]
+  instagram_optouts         instagram_optouts[]
+}
+
+model user_profiles {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email          String   @unique
+  password_hash  String?
+  full_name      String   @default("")
+  is_super_admin Boolean  @default(false)
+  otp_code       String?
+  otp_expires_at DateTime?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @default(now()) @updatedAt
+
+  memberships org_memberships[]
+}
+
+model org_memberships {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  org_id      String   @db.Uuid
+  role        String   @default("member")
+  is_active   Boolean  @default(true)
+  permissions Json     @default("{}")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  user user_profiles @relation(fields: [user_id], references: [id])
+  org  organizations @relation(fields: [org_id], references: [id])
+
+  @@unique([user_id, org_id])
+  @@index([org_id, is_active])
+}
+
+model org_integrations {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  org_id    String   @db.Uuid
+  platform  String
+  config    Json     @default("{}")
+  is_active Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  org organizations @relation(fields: [org_id], references: [id])
+
+  @@unique([org_id, platform], name: "org_id_platform")
+  @@index([org_id, platform])
+}
+
+// ─── Instagram Models ─────────────────────────────────────────────────────────
+
+model instagram_automations {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  org_id        String   @db.Uuid
+  name          String
+  trigger_type  String   // comment_keyword, story_reply, dm_keyword, all_comments, all_story_replies, all_dms
+  keywords      String[] @default([])
+  comment_reply String?
+  dm_message    String
+  follow_gate   Boolean  @default(false)
+  collect_email Boolean  @default(false)
+  email_prompt  String?
+  link_url      String?
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  org  organizations              @relation(fields: [org_id], references: [id])
+  logs instagram_automation_logs[]
+
+  @@index([org_id, is_active])
+  @@index([org_id, trigger_type])
+}
+
+model instagram_conversations {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  org_id                 String   @db.Uuid
+  ig_user_id             String
+  username               String?
+  profile_pic_url        String?
+  last_message_at        DateTime?
+  last_message_preview   String?
+  unread_count           Int      @default(0)
+  is_archived            Boolean  @default(false)
+  pending_automation_id  String?  @db.Uuid
+  created_at             DateTime @default(now())
+  updated_at             DateTime @default(now()) @updatedAt
+
+  org      organizations       @relation(fields: [org_id], references: [id])
+  messages instagram_messages[]
+
+  @@unique([org_id, ig_user_id])
+  @@index([org_id, last_message_at(sort: Desc)])
+}
+
+model instagram_messages {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversation_id String   @db.Uuid
+  ig_message_id   String   @unique
+  direction       String   // inbound, outbound
+  message_text    String?
+  media_url       String?
+  media_type      String?
+  timestamp       DateTime
+  created_at      DateTime @default(now())
+
+  conversation instagram_conversations @relation(fields: [conversation_id], references: [id])
+
+  @@index([conversation_id, timestamp(sort: Desc)])
+}
+
+model instagram_contacts {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  org_id        String   @db.Uuid
+  ig_user_id    String
+  username      String?
+  email         String?
+  phone         String?
+  is_follower   Boolean  @default(false)
+  source        String?  // comment_automation, dm_automation, story_reply, rewind, manual
+  automation_id String?  @db.Uuid
+  first_seen_at DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  org organizations @relation(fields: [org_id], references: [id])
+
+  @@unique([org_id, ig_user_id])
+  @@index([org_id, email])
+}
+
+model instagram_automation_logs {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  org_id          String   @db.Uuid
+  automation_id   String   @db.Uuid
+  ig_user_id      String
+  trigger_type    String
+  media_id        String?
+  comment_id      String?
+  dm_sent         Boolean  @default(false)
+  comment_replied Boolean  @default(false)
+  email_captured  String?
+  link_clicked    Boolean  @default(false)
+  country         String?
+  created_at      DateTime @default(now())
+
+  org        organizations         @relation(fields: [org_id], references: [id])
+  automation instagram_automations @relation(fields: [automation_id], references: [id])
+
+  @@unique([org_id, ig_user_id, comment_id])
+  @@index([org_id, automation_id, created_at(sort: Desc)])
+}
+
+model instagram_optouts {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  org_id     String   @db.Uuid
+  ig_user_id String
+  reason     String?  // stop, unsubscribe, manual
+  created_at DateTime @default(now())
+
+  org organizations @relation(fields: [org_id], references: [id])
+
+  @@unique([org_id, ig_user_id])
+  @@index([org_id])
+}
