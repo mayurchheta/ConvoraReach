@@ -79,10 +79,10 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
         {/* Footer */}
         <div className="px-4 py-3 border-t border-zinc-800 space-y-0.5">
           <Link
-            href={`/${orgSlug}/profile`}
+            href="/profile"
             className={cn(
               "flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-              pathname === `/${orgSlug}/profile`
+              pathname === "/profile"
                 ? "bg-purple-600/15 text-purple-400"
                 : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60"
             )}
