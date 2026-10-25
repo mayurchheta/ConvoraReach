@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   MessageCircle,
   Zap,
@@ -33,9 +34,9 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-60 bg-zinc-950 border-r border-zinc-800 flex flex-col shrink-0">
+      <aside className="w-60 bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 flex flex-col shrink-0">
         {/* Logo */}
-        <div className="px-5 py-5 border-b border-zinc-800">
+        <div className="px-5 py-5 border-b border-zinc-200 dark:border-zinc-800">
           <Link href="/instagram/dashboard" className="flex items-center gap-2.5">
             <Image
               src="/convora-icon-white.png"
@@ -44,7 +45,7 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
               height={32}
               className="rounded-lg"
             />
-            <span className="text-sm font-semibold text-white">Convora Reach</span>
+            <span className="text-sm font-semibold text-zinc-900 dark:text-white">Convora Reach</span>
           </Link>
         </div>
 
@@ -64,7 +65,7 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
                     ? "bg-purple-600/15 text-purple-400"
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
                 )}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
@@ -75,32 +76,33 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-zinc-800 space-y-0.5">
+        <div className="px-4 py-3 border-t border-zinc-200 dark:border-zinc-800 space-y-0.5">
           <Link
             href="/profile"
             className={cn(
               "flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors",
               pathname === "/profile"
                 ? "bg-purple-600/15 text-purple-400"
-                : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60"
+                : "text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
             )}
           >
             <UserCircle className="h-4 w-4" />
             Profile
           </Link>
+          <ThemeToggle />
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-zinc-500 hover:text-red-400 hover:bg-zinc-800/60 transition-colors"
+            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-zinc-500 hover:text-red-400 hover:bg-zinc-800/60 dark:hover:bg-zinc-800/60 transition-colors"
           >
             <LogOut className="h-4 w-4" />
             Sign out
           </button>
-          <p className="text-[10px] text-zinc-700 px-3 pt-1">Convora Reach v0.1.0</p>
+          <p className="text-[10px] text-zinc-700 dark:text-zinc-700 px-3 pt-1">Convora Reach v0.1.0</p>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-zinc-900">
+      <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-900">
         {children}
       </main>
     </div>
