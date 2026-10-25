@@ -38,6 +38,16 @@ export async function POST(
       return NextResponse.json({ error: convsBody.error?.message ?? "Failed to fetch conversations" }, { status: 502 })
     }
 
+    // Clear old messages and conversations before fresh sync
+    const oldConvIds = (await prisma.instagram_conversations.findMany({
+      where: { org_id: access.org.id },
+      select: { id: true },
+    })).map(c => c.id)
+    if (oldConvIds.length > 0) {
+      await prisma.instagram_messages.deleteMany({ where: { conversation_id: { in: oldConvIds } } })
+    }
+    await prisma.instagram_conversations.deleteMany({ where: { org_id: access.org.id } })
+
     let synced = 0
     let messagesImported = 0
 
