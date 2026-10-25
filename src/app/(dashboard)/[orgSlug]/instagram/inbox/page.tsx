@@ -435,7 +435,7 @@ export default function InstagramInboxPage() {
                             className={`max-w-[70%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
                               isOutbound
                                 ? "bg-indigo-600 text-white rounded-br-sm"
-                                : "bg-card text-foreground rounded-bl-sm shadow-sm"
+                                : "bg-zinc-800 text-zinc-100 rounded-bl-sm"
                             }`}
                           >
                             {(() => {
