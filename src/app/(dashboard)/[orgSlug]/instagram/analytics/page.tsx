@@ -63,7 +63,7 @@ interface InsightsData {
   daily: Array<{ date: string; reach: number; accounts_engaged: number; profile_views: number }>
   top_posts: Array<{
     id: string; caption: string; media_type: string; timestamp: string
-    permalink: string; reach: number; engaged: number; likes: number; comments: number
+    permalink: string; reach: number; impressions: number; likes: number; comments: number
   }>
 }
 
@@ -107,16 +107,24 @@ export default function InstagramAnalyticsPage() {
   const fetchAnalytics = useCallback(async () => {
     setLoading(true)
     try {
-      const [analyticsRes, insightsRes] = await Promise.all([
+      const [analyticsRes, insightsRes] = await Promise.allSettled([
         fetch(`/api/orgs/${orgSlug}/instagram/analytics?period=${period}`),
         fetch(`/api/orgs/${orgSlug}/instagram/insights?period=${period}`),
       ])
-      if (analyticsRes.ok) {
-        setData((await analyticsRes.json()) as AnalyticsData)
+      if (analyticsRes.status === "fulfilled" && analyticsRes.value.ok) {
+        setData((await analyticsRes.value.json()) as AnalyticsData)
+      } else {
+        setData({ total_triggers: 0, dms_sent: 0, comments_replied: 0, emails_captured: 0, daily: [], by_automation: [], by_trigger_type: [] })
       }
-      if (insightsRes.ok) {
-        setInsights((await insightsRes.json()) as InsightsData)
+      if (insightsRes.status === "fulfilled" && insightsRes.value.ok) {
+        try {
+          setInsights((await insightsRes.value.json()) as InsightsData)
+        } catch {
+          setInsights(null)
+        }
       }
+    } catch {
+      setData({ total_triggers: 0, dms_sent: 0, comments_replied: 0, emails_captured: 0, daily: [], by_automation: [], by_trigger_type: [] })
     } finally {
       setLoading(false)
     }
@@ -447,7 +455,7 @@ export default function InstagramAnalyticsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Reach</p>
-                  <p className="text-3xl font-bold mt-1 text-indigo-600">{insights.totals.reach.toLocaleString()}</p>
+                  <p className="text-3xl font-bold mt-1 text-indigo-600">{(insights.totals?.reach ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/30">
                   <Eye className="h-4 w-4 text-indigo-600" />
@@ -458,7 +466,7 @@ export default function InstagramAnalyticsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Engaged</p>
-                  <p className="text-3xl font-bold mt-1 text-cyan-600">{insights.totals.accounts_engaged?.toLocaleString() ?? "0"}</p>
+                  <p className="text-3xl font-bold mt-1 text-cyan-600">{(insights.totals?.accounts_engaged ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="p-2 rounded-lg bg-cyan-50 dark:bg-cyan-950/30">
                   <BarChart3 className="h-4 w-4 text-cyan-600" />
@@ -469,7 +477,7 @@ export default function InstagramAnalyticsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Profile Views</p>
-                  <p className="text-3xl font-bold mt-1 text-pink-600">{insights.totals.profile_views.toLocaleString()}</p>
+                  <p className="text-3xl font-bold mt-1 text-pink-600">{(insights.totals?.profile_views ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="p-2 rounded-lg bg-pink-50 dark:bg-pink-950/30">
                   <UserCheck className="h-4 w-4 text-pink-600" />
@@ -480,7 +488,7 @@ export default function InstagramAnalyticsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Followers</p>
-                  <p className="text-3xl font-bold mt-1 text-amber-600">{insights.follower_count.toLocaleString()}</p>
+                  <p className="text-3xl font-bold mt-1 text-amber-600">{(insights.follower_count ?? 0).toLocaleString()}</p>
                 </div>
                 <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30">
                   <Users className="h-4 w-4 text-amber-600" />
@@ -544,7 +552,7 @@ export default function InstagramAnalyticsPage() {
                     <tr>
                       <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Post</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Reach</th>
-                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Engaged</th>
+                      <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Impressions</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Likes</th>
                       <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Comments</th>
                     </tr>
@@ -563,15 +571,15 @@ export default function InstagramAnalyticsPage() {
                             </div>
                           </a>
                         </td>
-                        <td className="px-3 py-2.5 font-medium text-indigo-600">{post.reach.toLocaleString()}</td>
-                        <td className="px-3 py-2.5 text-muted-foreground">{post.engaged.toLocaleString()}</td>
+                        <td className="px-3 py-2.5 font-medium text-indigo-600">{(post.reach ?? 0).toLocaleString()}</td>
+                        <td className="px-3 py-2.5 text-muted-foreground">{(post.impressions ?? 0).toLocaleString()}</td>
                         <td className="px-3 py-2.5 text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Heart className="h-3 w-3 text-red-400" />
-                            {post.likes.toLocaleString()}
+                            {(post.likes ?? 0).toLocaleString()}
                           </div>
                         </td>
-                        <td className="px-3 py-2.5 text-muted-foreground">{post.comments.toLocaleString()}</td>
+                        <td className="px-3 py-2.5 text-muted-foreground">{(post.comments ?? 0).toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
