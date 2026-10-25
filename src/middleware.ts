@@ -12,6 +12,7 @@ export function middleware(req: NextRequest) {
     pathname === "/contact" ||
     pathname.startsWith("/api/webhooks/") ||
     pathname.startsWith("/api/auth/") ||
+    pathname.startsWith("/api/contact") ||
     pathname === "/privacy" ||
     pathname === "/terms" ||
     pathname === "/data-deletion"
@@ -29,6 +30,18 @@ export function middleware(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     return NextResponse.redirect(new URL("/login", req.url))
+  }
+
+  // Rewrite /instagram/* to /app/instagram/* (hide org slug from URL)
+  if (pathname.startsWith("/instagram")) {
+    const newPath = `/app${pathname}`
+    return NextResponse.rewrite(new URL(newPath, req.url))
+  }
+
+  // Rewrite /profile to /profile (no change needed, already standalone)
+  // Rewrite /dashboard to /app/instagram/dashboard
+  if (pathname === "/dashboard") {
+    return NextResponse.rewrite(new URL("/app/instagram/dashboard", req.url))
   }
 
   return NextResponse.next()

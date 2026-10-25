@@ -132,17 +132,17 @@ export default function DashboardPage() {
   }
 
   const stats = [
-    { label: "DMs Sent", value: data.dms_sent, icon: Send, color: "text-blue-400", bg: "bg-blue-500/10", href: `/${orgSlug}/instagram/inbox` },
-    { label: "Automations", value: `${data.active_automations}/${data.automations_count}`, icon: Zap, color: "text-amber-400", bg: "bg-amber-500/10", href: `/${orgSlug}/instagram/automations`, sub: "active" },
-    { label: "Emails Captured", value: data.emails_captured, icon: Mail, color: "text-emerald-400", bg: "bg-emerald-500/10", href: `/${orgSlug}/instagram/contacts` },
-    { label: "Total Triggers", value: data.recent_triggers, icon: BarChart3, color: "text-purple-400", bg: "bg-purple-500/10", href: `/${orgSlug}/instagram/analytics`, sub: "last 7 days" },
+    { label: "DMs Sent", value: data.dms_sent, icon: Send, color: "text-blue-400", bg: "bg-blue-500/10", href: "/instagram/inbox" },
+    { label: "Automations", value: `${data.active_automations}/${data.automations_count}`, icon: Zap, color: "text-amber-400", bg: "bg-amber-500/10", href: "/instagram/automations", sub: "active" },
+    { label: "Emails Captured", value: data.emails_captured, icon: Mail, color: "text-emerald-400", bg: "bg-emerald-500/10", href: "/instagram/contacts" },
+    { label: "Total Triggers", value: data.recent_triggers, icon: BarChart3, color: "text-purple-400", bg: "bg-purple-500/10", href: "/instagram/analytics", sub: "last 7 days" },
   ]
 
   const quickLinks = [
-    { label: "DM Inbox", desc: data.unread_count > 0 ? `${data.unread_count} unread` : "All caught up", icon: MessageCircle, href: `/${orgSlug}/instagram/inbox`, badge: data.unread_count > 0 ? data.unread_count : null },
-    { label: "Automations", desc: `${data.active_automations} active`, icon: Zap, href: `/${orgSlug}/instagram/automations` },
-    { label: "Contacts", desc: `${data.contacts_count} captured`, icon: Users, href: `/${orgSlug}/instagram/contacts` },
-    { label: "Analytics", desc: "View performance", icon: BarChart3, href: `/${orgSlug}/instagram/analytics` },
+    { label: "DM Inbox", desc: data.unread_count > 0 ? `${data.unread_count} unread` : "All caught up", icon: MessageCircle, href: "/instagram/inbox", badge: data.unread_count > 0 ? data.unread_count : null },
+    { label: "Automations", desc: `${data.active_automations} active`, icon: Zap, href: "/instagram/automations" },
+    { label: "Contacts", desc: `${data.contacts_count} captured`, icon: Users, href: "/instagram/contacts" },
+    { label: "Analytics", desc: "View performance", icon: BarChart3, href: "/instagram/analytics" },
   ]
 
   return (

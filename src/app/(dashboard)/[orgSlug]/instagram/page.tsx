@@ -213,7 +213,7 @@ export default function InstagramSettingsPage() {
                 ))}
               </ul>
               <a
-                href={`/api/orgs/${orgSlug}/instagram/connect`}
+                href={`https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${process.env.NEXT_PUBLIC_INSTAGRAM_APP_ID ?? "1265737819063214"}&redirect_uri=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/api/auth/instagram/callback` : "")}&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights&state=${orgSlug}`}
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 <Camera className="h-4 w-4" />
@@ -269,7 +269,7 @@ export default function InstagramSettingsPage() {
                   {syncing ? "Syncing..." : "Sync DMs"}
                 </button>
                 <a
-                  href={`/api/orgs/${orgSlug}/instagram/connect`}
+                  href={`https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${process.env.NEXT_PUBLIC_INSTAGRAM_APP_ID ?? "1265737819063214"}&redirect_uri=${encodeURIComponent(typeof window !== "undefined" ? `${window.location.origin}/api/auth/instagram/callback` : "")}&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights&state=${orgSlug}`}
                   className="text-xs text-muted-foreground hover:text-foreground border border-border rounded-lg px-2.5 py-1.5 transition-colors"
                 >
                   Reconnect
@@ -314,7 +314,7 @@ export default function InstagramSettingsPage() {
         <>
           <h2 className="font-medium text-lg">Features</h2>
           <div className="grid grid-cols-2 gap-4">
-            <Link href={`/${orgSlug}/instagram/automations`}>
+            <Link href="/instagram/automations">
               <Card className="p-5 hover:border-purple-300 hover:shadow-sm transition-all cursor-pointer group space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-purple-100 rounded-md group-hover:bg-purple-200 transition-colors">
@@ -328,7 +328,7 @@ export default function InstagramSettingsPage() {
               </Card>
             </Link>
 
-            <Link href={`/${orgSlug}/instagram/inbox`}>
+            <Link href="/instagram/inbox">
               <Card className="p-5 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer group space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-100 rounded-md group-hover:bg-blue-200 transition-colors">
@@ -342,7 +342,7 @@ export default function InstagramSettingsPage() {
               </Card>
             </Link>
 
-            <Link href={`/${orgSlug}/instagram/contacts`}>
+            <Link href="/instagram/contacts">
               <Card className="p-5 hover:border-green-300 hover:shadow-sm transition-all cursor-pointer group space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-green-100 rounded-md group-hover:bg-green-200 transition-colors">
@@ -356,7 +356,7 @@ export default function InstagramSettingsPage() {
               </Card>
             </Link>
 
-            <Link href={`/${orgSlug}/instagram/analytics`}>
+            <Link href="/instagram/analytics">
               <Card className="p-5 hover:border-orange-300 hover:shadow-sm transition-all cursor-pointer group space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-orange-100 rounded-md group-hover:bg-orange-200 transition-colors">
@@ -370,7 +370,7 @@ export default function InstagramSettingsPage() {
               </Card>
             </Link>
 
-            <Link href={`/${orgSlug}/instagram/publish`}>
+            <Link href="/instagram/publish">
               <Card className="p-5 hover:border-pink-300 hover:shadow-sm transition-all cursor-pointer group space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-rose-100 rounded-md group-hover:bg-rose-200 transition-colors">

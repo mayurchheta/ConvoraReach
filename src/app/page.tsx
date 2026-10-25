@@ -16,7 +16,7 @@ export default async function HomePage() {
     })
 
     if (membership) {
-      redirect(`/${membership.org.slug}/instagram`)
+      redirect("/instagram/dashboard")
     }
   }
 

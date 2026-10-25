@@ -135,7 +135,7 @@ export default function InstagramPublishPage() {
     <div className="p-6 max-w-xl space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Link href={`/${orgSlug}/instagram`}>
+        <Link href="/instagram">
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
             <ArrowLeft className="h-4 w-4" />
           </Button>

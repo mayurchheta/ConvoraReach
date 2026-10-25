@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useParams, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { cn } from "@/lib/utils"
 import {
@@ -28,7 +28,6 @@ const NAV_ITEMS = [
 ]
 
 export default function OrgLayout({ children }: { children: React.ReactNode }) {
-  const { orgSlug } = useParams<{ orgSlug: string }>()
   const pathname = usePathname()
 
   return (
@@ -37,7 +36,7 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
       <aside className="w-60 bg-zinc-950 border-r border-zinc-800 flex flex-col shrink-0">
         {/* Logo */}
         <div className="px-5 py-5 border-b border-zinc-800">
-          <Link href={`/${orgSlug}/instagram`} className="flex items-center gap-2.5">
+          <Link href="/instagram/dashboard" className="flex items-center gap-2.5">
             <Image
               src="/convora-icon-white.png"
               alt="Convora Reach"
@@ -45,25 +44,22 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
               height={32}
               className="rounded-lg"
             />
-            <div>
-              <span className="text-sm font-semibold text-white">Convora Reach</span>
-              <span className="block text-[10px] text-zinc-500 -mt-0.5">{orgSlug}</span>
-            </div>
+            <span className="text-sm font-semibold text-white">Convora Reach</span>
           </Link>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 py-3 px-3 space-y-0.5">
           {NAV_ITEMS.map((item) => {
-            const fullHref = `/${orgSlug}${item.href}`
             const isActive =
-              pathname === fullHref ||
-              (item.href !== "/instagram" && pathname.startsWith(fullHref))
+              item.href === "/instagram"
+                ? pathname === "/instagram" || pathname === "/app/instagram"
+                : pathname.startsWith(item.href) || pathname.startsWith(`/app${item.href}`)
 
             return (
               <Link
                 key={item.href}
-                href={fullHref}
+                href={item.href}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   isActive
