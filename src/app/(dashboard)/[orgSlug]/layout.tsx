@@ -13,6 +13,7 @@ import {
   Upload,
   Settings,
   LogOut,
+  UserCircle,
 } from "lucide-react"
 
 const NAV_ITEMS = [
@@ -76,7 +77,19 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-zinc-800 space-y-2">
+        <div className="px-4 py-3 border-t border-zinc-800 space-y-0.5">
+          <Link
+            href={`/${orgSlug}/profile`}
+            className={cn(
+              "flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+              pathname === `/${orgSlug}/profile`
+                ? "bg-purple-600/15 text-purple-400"
+                : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60"
+            )}
+          >
+            <UserCircle className="h-4 w-4" />
+            Profile
+          </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium text-zinc-500 hover:text-red-400 hover:bg-zinc-800/60 transition-colors"
@@ -84,7 +97,7 @@ export default function OrgLayout({ children }: { children: React.ReactNode }) {
             <LogOut className="h-4 w-4" />
             Sign out
           </button>
-          <p className="text-[10px] text-zinc-700 px-3">Convora Reach v0.1.0</p>
+          <p className="text-[10px] text-zinc-700 px-3 pt-1">Convora Reach v0.1.0</p>
         </div>
       </aside>
 

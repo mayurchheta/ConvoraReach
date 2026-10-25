@@ -9,6 +9,7 @@ export function middleware(req: NextRequest) {
     pathname === "/login" ||
     pathname === "/register" ||
     pathname === "/forgot-password" ||
+    pathname === "/contact" ||
     pathname.startsWith("/api/webhooks/") ||
     pathname.startsWith("/api/auth/") ||
     pathname === "/privacy" ||

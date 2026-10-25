@@ -34,6 +34,7 @@ model user_profiles {
   email          String   @unique
   password_hash  String?
   full_name      String   @default("")
+  avatar_url     String?
   is_super_admin Boolean  @default(false)
   otp_code       String?
   otp_expires_at DateTime?

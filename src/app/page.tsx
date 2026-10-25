@@ -161,6 +161,9 @@ export default async function HomePage() {
           <Link href="/data-deletion" className="underline hover:text-zinc-300">
             Data Deletion
           </Link>
+          <Link href="/contact" className="underline hover:text-zinc-300">
+            Contact Us
+          </Link>
         </div>
       </section>
 
@@ -179,6 +182,9 @@ export default async function HomePage() {
             </Link>
             <Link href="/data-deletion" className="hover:text-zinc-300">
               Data Deletion
+            </Link>
+            <Link href="/contact" className="hover:text-zinc-300">
+              Contact
             </Link>
           </div>
         </div>
