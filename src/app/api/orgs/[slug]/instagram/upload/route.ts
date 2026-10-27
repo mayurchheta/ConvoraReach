@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { put } from "@vercel/blob"
 import { verifyOrgAdmin } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
@@ -25,21 +26,29 @@ export async function POST(
       return NextResponse.json({ error: "Image must be under 8MB" }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const base64 = Buffer.from(bytes).toString("base64")
+    // Vercel Blob — reliable public hosting that Instagram can fetch.
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const ext = file.name.split(".").pop() || "jpg"
+      const key = `instagram/${access.org.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+      const blob = await put(key, file, {
+        access: "public",
+        contentType: file.type,
+        addRandomSuffix: false,
+      })
+      return NextResponse.json({ url: blob.url })
+    }
 
-    // Try imgbb if configured
+    // Fallback: imgbb (if configured)
     const imgbbKey = process.env.IMGBB_API_KEY
     if (imgbbKey) {
+      const bytes = await file.arrayBuffer()
+      const base64 = Buffer.from(bytes).toString("base64")
       const uploadForm = new URLSearchParams()
       uploadForm.set("image", base64)
-      uploadForm.set("expiration", "600")
-
       const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
         method: "POST",
         body: uploadForm,
       })
-
       if (uploadRes.ok) {
         const uploadData = (await uploadRes.json()) as { data?: { url?: string; display_url?: string } }
         const publicUrl = uploadData.data?.display_url ?? uploadData.data?.url
@@ -49,29 +58,15 @@ export async function POST(
       }
     }
 
-    // Fallback: upload to 0x0.st (free, no API key needed)
-    const blob = new Blob([bytes], { type: file.type })
-    const fallbackForm = new FormData()
-    fallbackForm.append("file", blob, file.name)
-
-    const fallbackRes = await fetch("https://0x0.st", {
-      method: "POST",
-      body: fallbackForm,
-    })
-
-    if (fallbackRes.ok) {
-      const url = (await fallbackRes.text()).trim()
-      if (url.startsWith("http")) {
-        return NextResponse.json({ url })
-      }
-    }
-
     return NextResponse.json(
-      { error: "Image upload failed. Please paste a public image URL instead." },
-      { status: 502 }
+      { error: "Image upload is not configured. Please paste a public image URL instead." },
+      { status: 500 }
     )
   } catch (err) {
     console.error("[instagram] Image upload error:", err)
-    return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
+    return NextResponse.json(
+      { error: "Image upload failed. Please paste a public image URL instead." },
+      { status: 500 }
+    )
   }
 }

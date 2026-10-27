@@ -15,12 +15,14 @@ import {
   LogOut,
   UserCircle,
   LayoutDashboard,
+  AtSign,
 } from "lucide-react"
 
 const NAV_ITEMS = [
   { href: "/instagram/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/instagram/inbox", label: "DM Inbox", icon: MessageCircle },
   { href: "/instagram/automations", label: "Automations", icon: Zap },
+  { href: "/instagram/mentions", label: "Mentions", icon: AtSign },
   { href: "/instagram/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/instagram/contacts", label: "Contacts", icon: Users },
   { href: "/instagram/publish", label: "Publish", icon: Upload },

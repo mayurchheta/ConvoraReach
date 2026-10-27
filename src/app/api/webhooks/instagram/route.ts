@@ -171,9 +171,70 @@ async function rateLimitedSendDM(
     console.warn(`[webhook] Rate limited for org ${orgId}: ${rateCheck.reason}`)
     return false
   }
-  await sendInstagramDM(igUserId, message, igAccountId, accessToken, apiBase)
+  const result = await sendInstagramDM(igUserId, message, igAccountId, accessToken, apiBase)
   recordDMSent(orgId)
+
+  // Persist the outbound message so it appears in the DM inbox thread
+  try {
+    await storeOutboundMessage(orgId, igUserId, message, result.message_id, accessToken, apiBase)
+  } catch (err) {
+    console.error("[webhook] Failed to store outbound message:", err)
+  }
   return true
+}
+
+// ─── Store Outbound Message ────────────────────────────────────────────────────
+// Records automation-sent DMs in the DB so the inbox shows the full thread.
+
+async function storeOutboundMessage(
+  orgId: string,
+  igUserId: string,
+  text: string,
+  messageId: string,
+  accessToken: string,
+  apiBase: string
+) {
+  const now = new Date()
+
+  const conversation = await prisma.instagram_conversations.upsert({
+    where: { org_id_ig_user_id: { org_id: orgId, ig_user_id: igUserId } },
+    create: {
+      org_id: orgId,
+      ig_user_id: igUserId,
+      last_message_at: now,
+      last_message_preview: text.slice(0, 200),
+      unread_count: 0,
+    },
+    update: {
+      last_message_at: now,
+      last_message_preview: text.slice(0, 200),
+    },
+  })
+
+  // Backfill username/avatar on a brand-new conversation
+  if (!conversation.username) {
+    const profile = await getInstagramProfile(igUserId, accessToken, apiBase)
+    if (profile) {
+      await prisma.instagram_conversations.update({
+        where: { id: conversation.id },
+        data: { username: profile.username, profile_pic_url: profile.profile_picture_url },
+      })
+    }
+  }
+
+  try {
+    await prisma.instagram_messages.create({
+      data: {
+        conversation_id: conversation.id,
+        ig_message_id: messageId,
+        direction: "outbound",
+        message_text: text,
+        timestamp: now,
+      },
+    })
+  } catch {
+    // Duplicate ig_message_id — already stored
+  }
 }
 
 // ─── Process Comment ───────────────────────────────────────────────────────────

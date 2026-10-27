@@ -30,7 +30,7 @@ export default function InstagramPublishPage() {
   const { orgSlug } = useParams<{ orgSlug: string }>()
   const igConnected = useInstagramStatus(orgSlug)
 
-  const [inputMode, setInputMode] = useState<InputMode>("url")
+  const [inputMode, setInputMode] = useState<InputMode>("upload")
   const [imageUrl, setImageUrl] = useState("")
   const [caption, setCaption] = useState("")
   const [publishing, setPublishing] = useState(false)

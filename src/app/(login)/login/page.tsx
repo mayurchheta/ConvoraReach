@@ -2,18 +2,16 @@
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { toast, Toaster } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { AuthLogo } from "@/components/auth-logo"
-import { Loader2 } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -33,9 +31,9 @@ export default function LoginPage() {
         setError("Invalid email or password")
         setLoading(false)
       } else {
-        toast.success("Signed in! Redirecting...")
-        router.push("/instagram/dashboard")
-        router.refresh()
+        // Hard navigation — loads the dashboard fresh and keeps the button
+        // in its "Signing in…" state until the page unloads (no lingering toast).
+        window.location.assign("/instagram/dashboard")
       }
     } catch {
       setError("Something went wrong")
@@ -45,7 +43,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
-      <Toaster position="top-center" theme="dark" richColors />
       <div className="w-full max-w-sm space-y-8">
         <AuthLogo />
 
@@ -88,16 +85,27 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your password"
-                required
-                autoComplete="current-password"
-                disabled={loading}
-                className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Your password"
+                  required
+                  autoComplete="current-password"
+                  disabled={loading}
+                  className="bg-zinc-950 border-zinc-800 focus-visible:ring-purple-500 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             <Button
